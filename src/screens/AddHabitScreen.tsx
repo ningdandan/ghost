@@ -1,3 +1,10 @@
+/**
+ * AddHabitScreen - A screen component for creating new habits
+ * Provides a form interface with:
+ * - Text input for habit name
+ * - Avatar picker for selecting a habit icon
+ * - Create/Cancel buttons for form submission
+ */
 import React, { useState } from 'react';
 import {
   View,
@@ -15,15 +22,33 @@ import { RootStackParamList } from '../types';
 import AvatarPicker from '../components/AvatarPicker';
 import { useHabits } from '../hooks/useHabits';
 
+/**
+ * Props type definition for the AddHabitScreen component
+ * Includes navigation prop for screen navigation
+ */
 type AddHabitScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'AddHabit'>;
 };
 
+/**
+ * AddHabitScreen Component
+ * Manages the creation of new habits with form validation and navigation
+ * Features:
+ * - Form validation (requires non-empty habit name)
+ * - Keyboard handling with KeyboardAvoidingView
+ * - Safe area handling for different devices
+ * - Avatar selection through AvatarPicker component
+ */
 const AddHabitScreen: React.FC<AddHabitScreenProps> = ({ navigation }) => {
+  // State management for form inputs
   const [habitName, setHabitName] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState('🎯');
   const { addHabit } = useHabits();
 
+  /**
+   * Handles the creation of a new habit
+   * Validates input, creates the habit, and navigates back
+   */
   const handleCreateHabit = async () => {
     if (!habitName.trim()) return;
 

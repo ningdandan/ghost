@@ -1,3 +1,8 @@
+/**
+ * HabitList Component
+ * A swipeable carousel of habits that displays one habit at a time with pagination
+ */
+
 import React, { useState, useCallback } from 'react';
 import {
   View,
@@ -16,17 +21,26 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 import AddHabitPage from './AddHabitPage';
 import LogList from './LogList';
 
+/**
+ * Props interface for HabitList component
+ * Defines what data and callbacks the component expects from its parent
+ * This is a TypeScript type definition. It's ONLY used during development/compilation to check for errors. It gets completely removed when the code runs.
+ */
 interface HabitListProps {
-  habits: Habit[];
-  selectedDate: Date;
-  onAddLog: (habitId: string) => void;
-  onAddHabit: () => void;
-  currentHabitId?: string;
-  onHabitChange?: (habitId: string) => void;
+  habits: Habit[];              // Array of habits to display
+  selectedDate: Date;           // Currently selected date for showing logs
+  onAddLog: (habitId: string) => void;  // Callback when user wants to add a log
+  onAddHabit: () => void;      // Callback when user wants to add a new habit
+  currentHabitId?: string;      // ID of currently selected habit
+  onHabitChange?: (habitId: string) => void;  // Callback when selected habit changes
 }
 
+// Get screen width for swipe calculations
 const { width } = Dimensions.get('window');
 
+/**
+ * HabitList Component Implementation
+ */
 const HabitList: React.FC<HabitListProps> = ({
   habits,
   selectedDate,
@@ -35,9 +49,16 @@ const HabitList: React.FC<HabitListProps> = ({
   currentHabitId,
   onHabitChange,
 }) => {
+  // Local state to track which habit is currently displayed
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Animation value for swipe gesture (0 = centered, negative = swiped left, positive = swiped right)
   const translateX = useSharedValue(0);
 
+  /**
+   * Updates the currently displayed habit
+   * Also notifies parent component about habit change via onHabitChange callback
+   */
   const updateIndex = useCallback((newIndex: number) => {
     setCurrentIndex(newIndex);
     if (onHabitChange && habits[newIndex]) {
@@ -45,31 +66,48 @@ const HabitList: React.FC<HabitListProps> = ({
     }
   }, [habits, onHabitChange]);
 
+  /**
+   * Handles the active swipe gesture
+   * Updates translateX value as user swipes
+   */
   const handleGestureEvent = useCallback((event: any) => {
     translateX.value = event.translationX;
   }, []);
 
+  /**
+   * Handles what happens when user finishes swipe gesture
+   * If swipe was significant (>30% of screen), changes to next/previous habit
+   * Otherwise, springs back to center
+   */
   const handleGestureEnd = useCallback(() => {
     if (Math.abs(translateX.value) > width * 0.3) {
       const newIndex = translateX.value > 0 
-        ? Math.max(0, currentIndex - 1)
-        : Math.min(habits.length, currentIndex + 1);
+        ? Math.max(0, currentIndex - 1)        // Swiped right = go to previous
+        : Math.min(habits.length, currentIndex + 1);  // Swiped left = go to next
       updateIndex(newIndex);
     }
+    // Animate back to center position
     translateX.value = withSpring(0);
   }, [currentIndex, habits.length, updateIndex]);
 
-  // Set initial habit ID
+  /**
+   * Effect to initialize first habit when component mounts
+   * or when habits array changes
+   */
   React.useEffect(() => {
     if (habits.length > 0 && onHabitChange && !currentHabitId) {
       onHabitChange(habits[0].id);
     }
   }, [habits, onHabitChange, currentHabitId]);
 
+  // Style for swipe animation
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
 
+  /**
+   * If no habits exist, show the AddHabitPage
+   */
   if (habits.length === 0) {
     return (
       <View style={styles.container}>
@@ -80,6 +118,7 @@ const HabitList: React.FC<HabitListProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Pagination dots - one for each habit plus one for add habit page */}
       <View style={styles.pagination}>
         {[...habits, null].map((_, index) => (
           <TouchableOpacity

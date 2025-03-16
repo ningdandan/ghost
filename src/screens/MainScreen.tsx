@@ -129,10 +129,11 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
     );
   }
 
-  // Main Render
+  // Main Render UI
   // ----------
   return (
     <View style={styles.container}>
+
       {/* Calendar Section */}
       <View style={styles.calendarContainer}>
         <Calendar date={currentDate} onMonthChange={handleMonthChange} />
@@ -178,6 +179,12 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation }) => {
   );
 };
 
+
+
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////
+// CSS styles for the MainScreen component, using flexbox for layout
 const styles = StyleSheet.create({
   container: {
     flex: 1,

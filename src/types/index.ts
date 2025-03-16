@@ -1,3 +1,4 @@
+// Defines what a Habit looks like in your app
 export interface Habit {
   id: string;
   name: string;
@@ -6,6 +7,7 @@ export interface Habit {
   logs: HabitLog[];
 }
 
+// Defines what a HabitLog looks like in your app
 export interface HabitLog {
   id: string;
   habitId: string;
@@ -14,7 +16,8 @@ export interface HabitLog {
   completed: boolean;
 }
 
+// Defines what screens exist and what data they need
 export type RootStackParamList = {
-  Main: undefined;
-  EditHabit: { habitId: string };
+  Main: undefined; // Main screen needs no parameters
+  EditHabit: { habitId: string }; // EditHabit screen needs a habitId parameter
 }; 
